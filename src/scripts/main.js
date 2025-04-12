@@ -10,12 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     actionButton.addEventListener('click', () => {
       if (actionButton.classList.contains('start')) {
         game.start();
-        // Change the button for future clicks to act as a restart trigger.
+        createGameBoard();
         actionButton.classList.remove('start');
         actionButton.classList.add('restart');
         actionButton.textContent = 'Restart';
       } else if (actionButton.classList.contains('restart')) {
         game.restart();
+        createGameBoard();
       }
       updateGameUI();
     });
@@ -58,7 +59,37 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+function createGameBoard() {
+  const gameBoardContainer = document.querySelector('.game-board');
+
+  gameBoardContainer.innerHTML = ''; // Clear any existing board
+
+  const board = game.getState();
+
+  board.forEach((row, rowIndex) => {
+    const rowDiv = document.createElement('div');
+
+    rowDiv.classList.add('board-row');
+
+    row.forEach((cellValue, colIndex) => {
+      const cellDiv = document.createElement('div');
+
+      cellDiv.classList.add('field-cell');
+      cellDiv.id = `cell-${rowIndex}-${colIndex}`;
+
+      if (cellValue) {
+        cellDiv.textContent = cellValue;
+        cellDiv.classList.add(`field-cell--${cellValue}`);
+      }
+      rowDiv.appendChild(cellDiv);
+    });
+
+    gameBoardContainer.appendChild(rowDiv);
+  });
+}
+
 function updateGameUI() {
+  // Update score
   const scoreEl = document.querySelector('.game-score');
 
   if (scoreEl) {
@@ -70,23 +101,20 @@ function updateGameUI() {
 
   board.forEach((row, rowIndex) => {
     row.forEach((cellValue, colIndex) => {
-      const cellId = `cell-${rowIndex}-${colIndex}`;
-      const cellEl = document.getElementById(cellId);
+      const cellEl = document.getElementById(`cell-${rowIndex}-${colIndex}`);
 
       if (cellEl) {
         cellEl.textContent = cellValue || '';
-        cellEl.className = 'field-cell';
+        cellEl.className = 'field-cell'; // Reset class
 
         if (cellValue) {
-          const tileClass = `field-cell--${cellValue}`;
-
-          cellEl.classList.add(tileClass);
+          cellEl.classList.add(`field-cell--${cellValue}`);
         }
       }
     });
   });
 
-  // Update win, lose, and start messages.
+  // Update win, lose, and start messages
   const loseMessageEl = document.querySelector('.message-lose');
   const winMessageEl = document.querySelector('.message-win');
   const startMessageEl = document.querySelector('.message-start');
@@ -116,7 +144,6 @@ function updateGameUI() {
       startMessageEl.classList.add('hidden');
     }
   } else {
-    // Hide w/l msgs and show the start message if the game is active or new.
     if (loseMessageEl) {
       loseMessageEl.classList.add('hidden');
     }

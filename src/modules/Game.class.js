@@ -235,9 +235,11 @@ class Game {
   }
 
   restart() {
-    this.board = Game._emptyBoard();
-    this.score = 0;
-    this.status = 'new';
+    this.board = Game._emptyBoard(); // Reset the board
+    this.score = 0; // Reset the score
+    this.status = 'playing'; // Set the status to 'playing'
+    this.insertRandomTile(); // Add the first random tile
+    this.insertRandomTile(); // Add the second random tile
   }
 }
 
